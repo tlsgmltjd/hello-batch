@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.configuration.JobFactory;
 import org.springframework.batch.core.configuration.annotation.*;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -18,26 +19,29 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
+@RequiredArgsConstructor
 public class HelloWorldJobConfig {
 
-    // Spring Batch 5 버전부터는 JobFactory, SetFactory를 사용해서 Job, Step을 만들지 않고
-    // 빌더를 사용하여 JobRepository를 파라미터로 주입받아 사용한다.
+    private final JobBuilderFactory jobBuilderFactory;
+    private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job helloWorldJob(JobRepository jobRepository, Step step) {
-        return new JobBuilder("helloWorldJob", jobRepository)
+    public Job helloWorldJob() {
+        return jobBuilderFactory.get("helloWorldJob")
                 .incrementer(new RunIdIncrementer())
-                .start(step)
+                .start(helloWorldStep())
                 .build();
     }
 
+    @JobScope
     @Bean
-    public Step helloWorldStep(JobRepository jobRepository, Tasklet tasklet, PlatformTransactionManager transactionManager) {
-        return new StepBuilder("helloWorldStep", jobRepository)
-                .tasklet(tasklet, transactionManager)
+    public Step helloWorldStep() {
+        return stepBuilderFactory.get("helloWorldStep")
+                .tasklet(helloWorldTasklet())
                 .build();
     }
 
+    @StepScope
     @Bean
     public Tasklet helloWorldTasklet() {
         return (contribution, chunkContext) -> {
