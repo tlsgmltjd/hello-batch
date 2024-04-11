@@ -1,4 +1,4 @@
-package com.example.hellobatch.job;
+package com.example.hellobatch.job.HelloWorld;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -18,6 +18,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+/*
+* desc: HelloWorld 출력
+* run: --spring.batch.job.names=helloWorldJob
+* */
 @Configuration
 @RequiredArgsConstructor
 public class HelloWorldJobConfig {
@@ -26,18 +30,18 @@ public class HelloWorldJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job helloWorldJob() {
+    public Job helloWorldJob(Step helloWorldStep) {
         return jobBuilderFactory.get("helloWorldJob")
                 .incrementer(new RunIdIncrementer())
-                .start(helloWorldStep())
+                .start(helloWorldStep)
                 .build();
     }
 
     @JobScope
     @Bean
-    public Step helloWorldStep() {
+    public Step helloWorldStep(Tasklet helloWorldTasklet) {
         return stepBuilderFactory.get("helloWorldStep")
-                .tasklet(helloWorldTasklet())
+                .tasklet(helloWorldTasklet)
                 .build();
     }
 
