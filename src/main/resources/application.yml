@@ -15,5 +15,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-    hibernate:
-      ddl-auto: create
+#    hibernate:
+#      ddl-auto: create
+#  sql:
+#    init:
+#      mode: always
